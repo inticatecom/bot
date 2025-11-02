@@ -1,10 +1,10 @@
 // Resources
 import {fetchFilesFromDir, console} from "../utility";
 import {pathToFileURL} from "url";
-import {REST, Routes, RESTPostAPIApplicationCommandsJSONBody} from "discord.js";
+import {REST, Routes, type RESTPostAPIApplicationCommandsJSONBody} from "discord.js";
 
 // Definitions
-import {FrameworkClient} from "../definitions";
+import type {FrameworkClient} from "../definitions";
 
 // Enumerators
 export enum PublishMethod {
@@ -23,7 +23,7 @@ export default class Commands {
     /** The Discord client instance. */
     private client: FrameworkClient;
     /** The REST instance for making API calls to Discord. */
-    private readonly rest = new REST().setToken(process.env.DISCORD_BOT_TOKEN);
+    private readonly rest = new REST().setToken(String(process.env.DISCORD_BOT_TOKEN));
 
     /**
      * Creates a new 'Commands' manager class.
@@ -76,7 +76,7 @@ export default class Commands {
      */
     private async publish(commands: RESTPostAPIApplicationCommandsJSONBody[], method: PublishMethod): Promise<void> {
         try {
-            const route = method === PublishMethod.Global ? Routes.applicationCommands(process.env.DISCORD_CLIENT_ID) : Routes.applicationGuildCommands(process.env.DISCORD_CLIENT_ID, process.env.DEV_GUILD_ID);
+            const route = method === PublishMethod.Global ? Routes.applicationCommands(String(process.env.DISCORD_CLIENT_ID)) : Routes.applicationGuildCommands(String(process.env.DISCORD_CLIENT_ID), String(process.env.DEV_GUILD_ID));
             await this.rest.put(route, {body: commands});
         } catch (e) {
             console.error(e);

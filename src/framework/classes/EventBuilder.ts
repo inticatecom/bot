@@ -1,6 +1,8 @@
-// Definitions
-import {FrameworkEvent} from "../definitions";
+// Resources
 import {Interaction} from "discord.js";
+
+// Definitions
+import type {FrameworkEvent} from "../definitions";
 
 /**
  * Creates a new event for the framework to utilize.

@@ -8,9 +8,11 @@
     "url": "https://inticate.dev"
   },
   "license": "MIT",
-  "type": "module",
+  "main": "dist/index.js",
   "scripts": {
-    "dev": "tsx watch src/index.ts"
+    "start": "tsx dist/index.js",
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc"
   },
   "dependencies": {
     "discord.js": "^14.24.2",

@@ -3,7 +3,7 @@ import {fetchFilesFromDir, console} from "../utility";
 import {pathToFileURL} from "url"
 
 // Definitions
-import type {FrameworkClient, FrameworkEvent} from "../definitions";
+import type {FrameworkClient} from "../definitions";
 
 /**
  * A class responsible for loading and registering event handlers for the client.

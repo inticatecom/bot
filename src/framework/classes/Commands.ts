@@ -21,7 +21,7 @@ export enum PublishMethod {
  */
 export default class Commands {
     /** The Discord client instance. */
-    private client: FrameworkClient;
+    private readonly client: FrameworkClient;
     /** The REST instance for making API calls to Discord. */
     private readonly rest = new REST().setToken(String(process.env.DISCORD_BOT_TOKEN));
 
@@ -34,7 +34,9 @@ export default class Commands {
     }
 
     /**
+     * @public
      * Loads and publishes the slash commands to Discord.
+     *
      * @param directory The directory for the command modules to be loaded from. Please keep in mind that this will
      * load files recursively meaning that folders inside of folders with files will also be loaded.
      * @param method The publish method to use. Keep in mind that global publishing can take longer and has higher
@@ -65,6 +67,22 @@ export default class Commands {
     }
 
     /**
+     * @public
+     * Reloads all command modules from the specified directory and republishes them to Discord.
+     *
+     * @param directory The directory for the command modules to be reloaded from.
+     * @param method The publish method to use. This defaults to 'Guild'.
+     *
+     * @example
+     * await commands.reload("./src/commands", PublishMethod.Guild);
+     */
+    public async reload(directory: string, method: PublishMethod = PublishMethod.Guild): Promise<void> {
+        await this.rest.put(this.getRoute(method), {body: []}); // Clear existing commands.
+        console.warn(`Reloaded all command modules from '${method}'.`);
+        await this.load(directory, method);
+    }
+
+    /**
      * @private
      * Internal method for handling publishing the commands to Discord.
      *
@@ -76,10 +94,23 @@ export default class Commands {
      */
     private async publish(commands: RESTPostAPIApplicationCommandsJSONBody[], method: PublishMethod): Promise<void> {
         try {
-            const route = method === PublishMethod.Global ? Routes.applicationCommands(String(process.env.DISCORD_CLIENT_ID)) : Routes.applicationGuildCommands(String(process.env.DISCORD_CLIENT_ID), String(process.env.DEV_GUILD_ID));
-            await this.rest.put(route, {body: commands});
+            await this.rest.put(this.getRoute(method), {body: commands});
         } catch (e) {
             console.error(e);
         }
+    }
+
+    /**
+     * @private
+     * Fetches the appropriate route for publishing commands based on the provided method.
+     *
+     * @param method The method to use for publishing.
+     * @returns The API route for publishing commands.
+     *
+     * @example
+     * const route = this.getRoute(PublishMethod.Guild);
+     */
+    private getRoute(method: PublishMethod): `/${string}` {
+        return method === PublishMethod.Global ? Routes.applicationCommands(String(process.env.DISCORD_CLIENT_ID)) : Routes.applicationGuildCommands(String(process.env.DISCORD_CLIENT_ID), String(process.env.DEV_GUILD_ID));
     }
 }

@@ -1,18 +1,19 @@
 {
   // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
+    // Project Structure
+    "rootDir": "./src",
     // File Layout
     "outDir": "./dist",
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
-    "module": "CommonJS",
-    "moduleResolution": "Node",
     "lib": [
       "es2022"
     ],
     "types": [
       "node"
     ],
+    "esModuleInterop": true,
     // Other Outputs
     "sourceMap": true,
     "declaration": false,

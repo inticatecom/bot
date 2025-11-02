@@ -14,7 +14,7 @@ import type {FrameworkClient} from "../definitions";
  */
 export default class Events {
     /** The client instance. */
-    private client: FrameworkClient;
+    private readonly client: FrameworkClient;
 
     /**
      * Creates a new 'Events' manager class.
@@ -25,8 +25,13 @@ export default class Events {
     }
 
     /**
+     * @public
      * Loads event module from the specified directory recursively to the client.
+     *
      * @param directory The directory to load event modules from.
+     *
+     * @example
+     * await events.load("./src/events");
      */
     public async load(directory: string): Promise<void> {
         const events = await fetchFilesFromDir(directory);

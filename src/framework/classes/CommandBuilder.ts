@@ -15,7 +15,7 @@ import type {FrameworkCommand} from "../definitions";
 export default class CommandBuilder {
     /** The command data. */
     public readonly data: FrameworkCommand["data"];
-    /** The function to execute when the command is triggered.. */
+    /** The function to execute when the command is triggered. */
     public readonly execute: FrameworkCommand["execute"];
 
     /**

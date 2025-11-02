@@ -11,7 +11,7 @@ import type {FrameworkEvent} from "../definitions";
  * export default class EventBuilder {
  *     event: Events.InteractionCreate,
  *     async execute(interaction: Interaction) {
- *     // Your code here
+ *          // Your code here
  *     }
  * }
  */

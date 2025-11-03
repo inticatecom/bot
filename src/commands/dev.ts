@@ -13,6 +13,16 @@ export default new CommandBuilder({
         ).addSubcommand(subcommand => subcommand
             .setName("publish")
             .setDescription("Reload the bot's slash commands.")
+            .addStringOption(option =>
+                option
+                    .setName("method")
+                    .setDescription("The publish method to use when publishing the commands.")
+                    .setRequired(false)
+                    .addChoices(
+                        {name: "Global", value: "global"},
+                        {name: "Guild", value: "guild"}
+                    )
+            )
         ),
     async execute(interaction) {
         // Variables
@@ -52,7 +62,8 @@ export default new CommandBuilder({
             /* Reload Slash Commands */
             case "publish": {
                 await interaction.deferReply({flags: MessageFlags.Ephemeral});
-                const loaded = await (interaction.client as FrameworkClient).commandsManager.publish();
+                const method = interaction.options.get("method", false);
+                const loaded = await (interaction.client as FrameworkClient).commandsManager.publish(method && method.value === "global" ? 0 : 1);
 
                 const container = new ContainerBuilder()
                     .addTextDisplayComponents(display =>

@@ -1,7 +1,8 @@
 // Resources
 import {CommandBuilder} from "../framework";
-import {SlashCommandBuilder} from "discord.js";
+import {ContainerBuilder, MessageFlags, SlashCommandBuilder} from "discord.js";
 
+/* A subcommand group for development related commands */
 export default new CommandBuilder({
     data: new SlashCommandBuilder()
         .setName("dev")
@@ -15,11 +16,38 @@ export default new CommandBuilder({
         const subcommand = interaction.options.getSubcommand(true);
 
         switch (subcommand) {
+            /* Development Information */
             case "info": {
-                await interaction.deferReply();
+                await interaction.deferReply({flags: MessageFlags.Ephemeral});
                 const memory = process.memoryUsage();
 
-                await interaction.followUp(`${toMegabyte(memory.heapUsed)}/${toMegabyte(memory.heapTotal)}MB`);
+                const container = new ContainerBuilder()
+                    .addTextDisplayComponents(display =>
+                        display.setContent("## Development Statistics")
+                    )
+                    .addTextDisplayComponents(display =>
+                        display.setContent("Important information regarding the bot's statistics. This information" +
+                            " is only visible to you and should not be shared publicly.")
+                    )
+                    .addSeparatorComponents(separator => separator)
+                    .addTextDisplayComponents(display =>
+                        display.setContent(`### Memory Usage\n${toMegabyte(memory.heapUsed)}/${toMegabyte(memory.heapTotal)} MB`)
+                    )
+                    .addSeparatorComponents(separator => separator)
+                    .addTextDisplayComponents(display =>
+                        display.setContent("-# Developed by Inticate Softworks")
+                    )
+                ;
+
+                await interaction.followUp({
+                    components: [container],
+                    flags: [MessageFlags.IsComponentsV2, MessageFlags.Ephemeral],
+                });
+
+                break;
+            }
+            /* Reload Slash Commands */
+            case "reload": {
                 break;
             }
         }

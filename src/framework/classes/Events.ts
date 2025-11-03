@@ -55,6 +55,6 @@ export default class Events {
             console.debug(`Loaded event module from '${eventPath}'.`);
         }
 
-        console.debug(`Loaded ${loaded} event(s) from '${directory}'.`);
+        console.info(`Added ${loaded} event(s) from '${directory}'.`);
     }
 }

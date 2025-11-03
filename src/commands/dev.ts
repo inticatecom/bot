@@ -1,5 +1,5 @@
 // Resources
-import {CommandBuilder} from "../framework";
+import {CommandBuilder, type FrameworkClient} from "../framework";
 import {ContainerBuilder, MessageFlags, SlashCommandBuilder} from "discord.js";
 
 /* A subcommand group for development related commands */
@@ -10,6 +10,9 @@ export default new CommandBuilder({
         .addSubcommand(subcommand => subcommand
             .setName("info")
             .setDescription("Replies with the bot's latency and networking information.")
+        ).addSubcommand(subcommand => subcommand
+            .setName("publish")
+            .setDescription("Reload the bot's slash commands.")
         ),
     async execute(interaction) {
         // Variables
@@ -47,7 +50,32 @@ export default new CommandBuilder({
                 break;
             }
             /* Reload Slash Commands */
-            case "reload": {
+            case "publish": {
+                await interaction.deferReply({flags: MessageFlags.Ephemeral});
+                const loaded = await (interaction.client as FrameworkClient).commandsManager.publish();
+
+                const container = new ContainerBuilder()
+                    .addTextDisplayComponents(display =>
+                        display.setContent("## Command Publishing")
+                    )
+                    .addTextDisplayComponents(display =>
+                        display.setContent(`The following ${loaded.length} slash command(s) have been published successfully to Discord.`)
+                    )
+                    .addSeparatorComponents(separator => separator)
+                    .addTextDisplayComponents(display =>
+                        display.setContent(loaded.map(command => `- /${command}`).join("\n"))
+                    )
+                    .addSeparatorComponents(separator => separator)
+                    .addTextDisplayComponents(display =>
+                        display.setContent("-# Developed by Inticate Softworks")
+                    )
+                ;
+
+                await interaction.followUp({
+                    components: [container],
+                    flags: [MessageFlags.Ephemeral, MessageFlags.IsComponentsV2],
+                })
+
                 break;
             }
         }

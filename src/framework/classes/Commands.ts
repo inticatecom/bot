@@ -24,6 +24,8 @@ export default class Commands {
     private readonly client: FrameworkClient;
     /** The REST instance for making API calls to Discord. */
     private readonly rest = new REST().setToken(String(process.env.DISCORD_BOT_TOKEN));
+    /** The loaded commands ready for publishing. */
+    private loaded: RESTPostAPIApplicationCommandsJSONBody[] = []
 
     /**
      * Creates a new 'Commands' manager class.
@@ -39,31 +41,29 @@ export default class Commands {
      *
      * @param directory The directory for the command modules to be loaded from. Please keep in mind that this will
      * load files recursively meaning that folders inside of folders with files will also be loaded.
-     * @param method The publish method to use. Keep in mind that global publishing can take longer and has higher
-     * rate-limits. Use the guild method for development and testing and the global method when commands need to be
-     * accessed by more than one guild. This default to 'Guild'.
      *
      * @example
      * commands.load("./src/commands", PublishMethod.Guild);
      */
-    public async load(directory: string, method: PublishMethod = PublishMethod.Guild): Promise<void> {
+    public async load(directory: string): Promise<void> {
         const locations = await fetchFilesFromDir(directory);
-        const loaded: RESTPostAPIApplicationCommandsJSONBody[] = [];
+        let loaded: number = 0;
 
         for (const location of locations) {
             const module = await import(pathToFileURL(location).href);
 
             if (module.default && module.default.execute) {
                 this.client.commands.set(module.default.data.name, module.default);
-                loaded.push(module.default.data.toJSON());
+                this.loaded.push(module.default.data.toJSON());
+
+                loaded++;
                 console.debug(`Loaded command module from '${location}'.`);
             } else {
                 console.warn(`Invalid command module at '${location}', missing 'execute' method.`);
             }
         }
 
-        await this.publish(loaded, method);
-        console.debug(`Loaded ${loaded.length} command(s) from '${directory}'.`);
+        console.info(`Added ${loaded} command(s) from '${directory}'.`);
     }
 
     /**
@@ -77,27 +77,32 @@ export default class Commands {
      * await commands.reload("./src/commands", PublishMethod.Guild);
      */
     public async reload(directory: string, method: PublishMethod = PublishMethod.Guild): Promise<void> {
-        await this.rest.put(this.getRoute(method), {body: []}); // Clear existing commands.
-        console.warn(`Reloaded all command modules from '${method}'.`);
-        await this.load(directory, method);
+        this.loaded = []; // Clear existing loaded commands.
+        await this.rest.put(this.getRoute(method), {body: []}); // Send empty array to clear commands on Discord.
+
+        console.warn(`Cleared commands from existing loaded.`);
+        await this.load(directory);
     }
 
     /**
-     * @private
-     * Internal method for handling publishing the commands to Discord.
+     * Publishes the loaded commands to Discord using the specified method.
      *
-     * @param commands The commands to publish.
      * @param method The method to use for publishing.
      *
      * @example
-     * await this.publish(commands, PublishMethod.Global);
+     * await this.publish(PublishMethod.Global);
      */
-    private async publish(commands: RESTPostAPIApplicationCommandsJSONBody[], method: PublishMethod): Promise<void> {
+    public async publish(method: PublishMethod = PublishMethod.Guild): Promise<string[]> {
         try {
-            await this.rest.put(this.getRoute(method), {body: commands});
+            await this.rest.put(this.getRoute(method), {body: this.loaded});
+
+            console.info(`Published ${this.loaded.length} command(s) using method '${PublishMethod[method]}'.`);
+            return this.loaded.map(cmd => cmd.name);
         } catch (e) {
             console.error(e);
         }
+
+        return [];
     }
 
     /**

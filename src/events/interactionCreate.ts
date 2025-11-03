@@ -1,6 +1,6 @@
 // Resources
 import {EventBuilder, console} from "../framework";
-import {Events, MessageFlags} from "discord.js";
+import {ContainerBuilder, Events, MessageFlags} from "discord.js";
 import {FrameworkClient, FrameworkCommand} from "../framework/definitions";
 
 export default new EventBuilder({
@@ -13,19 +13,36 @@ export default new EventBuilder({
 
         try {
             await command.execute(interaction);
+            console.debug(`User '${interaction.user.tag}' executed command '/${interaction.commandName}'.`);
         } catch (e) {
             console.error(e);
             if (interaction.replied || interaction.deferred) {
                 await interaction.followUp({
-                    content: "There was an error while executing this command!",
-                    flags: MessageFlags.Ephemeral
+                    components: [getErrorMessage("500")],
+                    flags: [MessageFlags.Ephemeral, MessageFlags.IsComponentsV2]
                 });
             } else {
                 await interaction.reply({
-                    content: "There was an error while executing this command!",
-                    flags: MessageFlags.Ephemeral
+                    components: [getErrorMessage("500")],
+                    flags: [MessageFlags.Ephemeral, MessageFlags.IsComponentsV2]
                 });
             }
         }
     }
 })
+
+function getErrorMessage(code: string): ContainerBuilder {
+    return new ContainerBuilder()
+        .setAccentColor(0xFF0000)
+        .addTextDisplayComponents(display =>
+            display.setContent("## Unknown Error")
+        )
+        .addTextDisplayComponents(display =>
+            display.setContent("Unfortunately, an unknown error has occurred. Please try again later or contact our" +
+                " development team with the error code provided below.")
+        )
+        .addSeparatorComponents(separator => separator)
+        .addTextDisplayComponents(display =>
+            display.setContent(`-# Error Code: ${code}`)
+        );
+}

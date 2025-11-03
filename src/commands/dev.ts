@@ -82,6 +82,15 @@ export default new CommandBuilder({
     }
 })
 
+/**
+ * Converts bytes to megabytes.
+ *
+ * @param bytes The amount of bytes.
+ * @returns The amount of bytes in megabytes.
+ *
+ * @example
+ * toMegabyte(1048576); // 1
+ */
 function toMegabyte(bytes: number): number {
     return Math.floor(bytes / 1024 / 1024);
 }

@@ -37,13 +37,15 @@ export default class Commands {
 
     /**
      * @public
-     * Loads and publishes the slash commands to Discord.
+     * Loads the commands from the provided directory recursively. Please keep in mind you will still need to call
+     * the publish method to register the commands with Discord after loading them.
      *
      * @param directory The directory for the command modules to be loaded from. Please keep in mind that this will
      * load files recursively meaning that folders inside of folders with files will also be loaded.
      *
      * @example
-     * commands.load("./src/commands", PublishMethod.Guild);
+     * await commands.load("./src/commands");
+     * await commands.publish(PublishMethod.Guild);
      */
     public async load(directory: string): Promise<void> {
         const locations = await fetchFilesFromDir(directory);
@@ -68,23 +70,24 @@ export default class Commands {
 
     /**
      * @public
-     * Reloads all command modules from the specified directory and republishes them to Discord.
+     * Resets the loaded commands and loads them with the new ones. Please keep in mind you will still have to
+     * publish the commands again after reloading them.
      *
      * @param directory The directory for the command modules to be reloaded from.
-     * @param method The publish method to use. This defaults to 'Guild'.
      *
      * @example
-     * await commands.reload("./src/commands", PublishMethod.Guild);
+     * await commands.reload("./src/commands");
+     * await commands.publish(PublishMethod.Guild);
      */
-    public async reload(directory: string, method: PublishMethod = PublishMethod.Guild): Promise<void> {
+    public async reload(directory: string): Promise<void> {
         this.loaded = []; // Clear existing loaded commands.
-        await this.rest.put(this.getRoute(method), {body: []}); // Send empty array to clear commands on Discord.
 
         console.warn(`Cleared commands from existing loaded.`);
         await this.load(directory);
     }
 
     /**
+     * @public
      * Publishes the loaded commands to Discord using the specified method.
      *
      * @param method The method to use for publishing.

@@ -1,6 +1,6 @@
 // Resources
 import * as dotenv from "dotenv";
-import {FrameworkClient, Commands, Events, console} from "./framework";
+import {FrameworkClient, console} from "./framework";
 
 dotenv.config({quiet: true}); // Load environment variables from '.env' file.
 
@@ -11,13 +11,9 @@ async function main() {
         intents: []
     });
 
-    // Load the commands.
-    const commands = new Commands(client);
-    await commands.load("./src/commands");
-
-    // Load the events.
-    const events = new Events(client);
-    await events.load("./src/events");
+    // Load Managers
+    await client.commandsManager.load("./src/commands");
+    await client.eventsManager.load("./src/events");
 
     await client.login(process.env.DISCORD_BOT_TOKEN); // Log in to the Discord bot account with the bot token.
 }

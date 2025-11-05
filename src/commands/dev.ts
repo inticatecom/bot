@@ -2,6 +2,9 @@
 import {CommandBuilder, type FrameworkClient} from "../framework";
 import {ContainerBuilder, MessageFlags, SlashCommandBuilder} from "discord.js";
 
+// Variables
+const developers = String(process.env.DEVELOPER_IDS).split(",");
+
 /* A subcommand group for development related commands */
 export default new CommandBuilder({
     data: new SlashCommandBuilder()
@@ -27,6 +30,28 @@ export default new CommandBuilder({
     async execute(interaction) {
         // Variables
         const subcommand = interaction.options.getSubcommand(true);
+
+        if (!developers.includes(interaction.user.id)) {
+            await interaction.reply({
+                components: [
+                    new ContainerBuilder()
+                        .setAccentColor(0xFF0000)
+                        .addTextDisplayComponents(display =>
+                            display.setContent("## Access Denied")
+                        )
+                        .addTextDisplayComponents(display =>
+                            display.setContent("You do not have permission to use this command. If you believe this is an" +
+                                " error, please contact the bot's development team.")
+                        )
+                        .addSeparatorComponents(separator => separator)
+                        .addTextDisplayComponents(display =>
+                            display.setContent("-# Developed by Inticate Softworks")
+                        )
+                ],
+                flags: [MessageFlags.Ephemeral, MessageFlags.IsComponentsV2]
+            })
+            return;
+        }
 
         switch (subcommand) {
             /* Development Information */

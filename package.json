@@ -11,8 +11,8 @@
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
-    "start": "tsx dist/index.js",
-    "dev": "tsx watch src/index.ts",
+    "start": "bun dist/index.js",
+    "dev": "bun --watch src/index.ts",
     "build": "tsup"
   },
   "dependencies": {

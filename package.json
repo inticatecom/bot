@@ -13,7 +13,7 @@
   "scripts": {
     "start": "bun dist/index.js",
     "dev": "bun --watch src/index.ts",
-    "build": "tsup"
+    "build": "bun build ./src/index.ts --outdir ./dist --target node --format esm --splitting"
   },
   "dependencies": {
     "discord.js": "^14.24.2",
@@ -24,7 +24,6 @@
   "devDependencies": {
     "@eslint/js": "^9.39.0",
     "eslint": "^9.39.0",
-    "tsup": "^8.5.0",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.46.2"

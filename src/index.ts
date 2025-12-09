@@ -1,15 +1,10 @@
 // Resources
-import * as dotenv from "dotenv";
+import "dotenv";
 import {FrameworkClient, console} from "./framework";
-
-dotenv.config({quiet: true}); // Load environment variables from '.env' file.
 
 /** Main entry point of the application. Loads commands and events in the client. */
 async function main() {
-    // Initialize the Discord client.
-    const client = new FrameworkClient({
-        intents: []
-    });
+    const client = new FrameworkClient({intents: []}); // Initialize the Discord client.
 
     // Load Managers
     await client.commandsManager.load("./src/commands");

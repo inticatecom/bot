@@ -49,7 +49,7 @@ export default new CommandBuilder({
                         )
                 ],
                 flags: [MessageFlags.Ephemeral, MessageFlags.IsComponentsV2]
-            })
+            });
             return;
         }
 
@@ -79,7 +79,7 @@ export default new CommandBuilder({
 
                 await interaction.followUp({
                     components: [container],
-                    flags: [MessageFlags.IsComponentsV2, MessageFlags.Ephemeral],
+                    flags: [MessageFlags.IsComponentsV2, MessageFlags.Ephemeral]
                 });
 
                 break;
@@ -109,14 +109,14 @@ export default new CommandBuilder({
 
                 await interaction.followUp({
                     components: [container],
-                    flags: [MessageFlags.Ephemeral, MessageFlags.IsComponentsV2],
-                })
+                    flags: [MessageFlags.Ephemeral, MessageFlags.IsComponentsV2]
+                });
 
                 break;
             }
         }
     }
-})
+});
 
 /**
  * Converts bytes to megabytes.

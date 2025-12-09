@@ -1,7 +1,11 @@
 // Resources
 import {fetchFilesFromDir, console} from "../utility";
 import {pathToFileURL} from "url";
-import {REST, Routes, type RESTPostAPIApplicationCommandsJSONBody} from "discord.js";
+import {
+    REST,
+    Routes,
+    type RESTPostAPIApplicationCommandsJSONBody
+} from "discord.js";
 
 // Definitions
 import type {FrameworkClient} from "../definitions";
@@ -9,7 +13,7 @@ import type {FrameworkClient} from "../definitions";
 // Enumerators
 export enum PublishMethod {
     Global,
-    Guild
+    Guild,
 }
 
 /**
@@ -23,9 +27,11 @@ export default class Commands {
     /** The Discord client instance. */
     private readonly client: FrameworkClient;
     /** The REST instance for making API calls to Discord. */
-    private readonly rest = new REST().setToken(String(process.env.DISCORD_BOT_TOKEN));
+    private readonly rest = new REST().setToken(
+        String(process.env.DISCORD_BOT_TOKEN)
+    );
     /** The loaded commands ready for publishing. */
-    private loaded: RESTPostAPIApplicationCommandsJSONBody[] = []
+    private loaded: RESTPostAPIApplicationCommandsJSONBody[] = [];
 
     /**
      * Creates a new 'Commands' manager class.
@@ -49,7 +55,7 @@ export default class Commands {
      */
     public async load(directory: string): Promise<void> {
         const locations = await fetchFilesFromDir(directory);
-        let loaded: number = 0;
+        let loaded = 0;
 
         for (const location of locations) {
             const module = await import(pathToFileURL(location).href);
@@ -61,7 +67,9 @@ export default class Commands {
                 loaded++;
                 console.debug(`Loaded command module from '${location}'.`);
             } else {
-                console.warn(`Invalid command module at '${location}', missing 'execute' method.`);
+                console.warn(
+                    `Invalid command module at '${location}', missing 'execute' method.`
+                );
             }
         }
 
@@ -99,8 +107,10 @@ export default class Commands {
         try {
             await this.rest.put(this.getRoute(method), {body: this.loaded});
 
-            console.info(`Published ${this.loaded.length} command(s) using method '${PublishMethod[method]}'.`);
-            return this.loaded.map(cmd => cmd.name);
+            console.info(
+                `Published ${this.loaded.length} command(s) using method '${PublishMethod[method]}'.`
+            );
+            return this.loaded.map((cmd) => cmd.name);
         } catch (e) {
             console.error(e);
         }
@@ -119,6 +129,11 @@ export default class Commands {
      * const route = this.getRoute(PublishMethod.Guild);
      */
     private getRoute(method: PublishMethod): `/${string}` {
-        return method === PublishMethod.Global ? Routes.applicationCommands(String(process.env.DISCORD_CLIENT_ID)) : Routes.applicationGuildCommands(String(process.env.DISCORD_CLIENT_ID), String(process.env.DEV_GUILD_ID));
+        return method === PublishMethod.Global
+            ? Routes.applicationCommands(String(process.env.DISCORD_CLIENT_ID))
+            : Routes.applicationGuildCommands(
+                String(process.env.DISCORD_CLIENT_ID),
+                String(process.env.DEV_GUILD_ID)
+            );
     }
 }

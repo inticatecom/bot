@@ -1,6 +1,6 @@
 // Resources
 import {fetchFilesFromDir, console} from "../utility";
-import {pathToFileURL} from "url"
+import {pathToFileURL} from "url";
 
 // Definitions
 import type {FrameworkClient} from "../definitions";
@@ -35,7 +35,7 @@ export default class Events {
      */
     public async load(directory: string): Promise<void> {
         const events = await fetchFilesFromDir(directory);
-        let loaded: number = 0;
+        let loaded = 0;
 
         for (const eventPath of events) {
             const event = await import(pathToFileURL(eventPath).href);
@@ -46,9 +46,13 @@ export default class Events {
             }
 
             if (event.default.once) {
-                this.client.once(event.default.event, (...args) => event.default.execute(...args));
+                this.client.once(event.default.event, (...args) =>
+                    event.default.execute(...args)
+                );
             } else if (!event.default.once) {
-                this.client.on(event.default.event, (...args) => event.default.execute(...args));
+                this.client.on(event.default.event, (...args) =>
+                    event.default.execute(...args)
+                );
             }
 
             loaded += 1;

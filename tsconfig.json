@@ -15,7 +15,7 @@
     ],
     "esModuleInterop": true,
     // Other Outputs
-    "sourceMap": true,
+    "sourceMap": false,
     "declaration": false,
     "declarationMap": false,
     // Stricter Typechecking Options

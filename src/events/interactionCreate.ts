@@ -29,8 +29,14 @@ export default new EventBuilder({
             }
         }
     }
-})
+});
 
+/**
+ * Creates a well-formatted error message container.
+ * @param code The error code to display to the user.
+ *
+ * @returns A container builder with the error message.
+ */
 function getErrorMessage(code: string): ContainerBuilder {
     return new ContainerBuilder()
         .setAccentColor(0xFF0000)
